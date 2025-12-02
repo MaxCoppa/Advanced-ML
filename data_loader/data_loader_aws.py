@@ -20,11 +20,11 @@ class S3ParquetReader:
         with self.fs.open(FILE_PATH_S3, mode="rb") as file_in:
             return pl.read_parquet(file_in)
 
-    def save_parquet(self, relative_path: str) -> pl.DataFrame:
+    def save_parquet(self, data: pl.DataFrame, relative_path: str):
         """
         save Parquet file polars dataframe
         """
         FILE_PATH_S3 = self.bucket + "/" + relative_path
 
         with self.fs.open(FILE_PATH_S3, mode="w") as file_out:
-            pl.to_paraquet(file_out)
+            data.write_parquet(file_out)

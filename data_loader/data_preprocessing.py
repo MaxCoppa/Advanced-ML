@@ -18,6 +18,6 @@ def select_symbol_id(data: pl.DataFrame, id: int = 1) -> pl.DataFrame:
     """
 
     data_filter_symb = data.filter(pl.col("symbol_id") == id)
-    data_filter_symb = data_filter_symb.sort_by(["date_id", "time_id"])
+    data_filter_symb = data_filter_symb.sort(["date_id", "time_id"])
 
     return data_filter_symb

@@ -14,10 +14,7 @@ from data_loader import (
 # This code make the assumption the data are stored in https://datalab.sspcloud.fr/file-explorer/[user]/
 BUCKET = f"/{USER}/jane_street_data"
 
-
 # %%
-
-
 reader = S3ParquetReader(bucket=BUCKET)
 
 # %%
@@ -44,4 +41,10 @@ data = pl.concat(data_partitions)
 data_clean_symb_1 = data.pipe(clean_na_values, threshold=0.05).pipe(
     select_symbol_id, id=1
 )
+
 data_clean_symb_1.head()
+# data_clean_symb_1.shape # (1487470, 79)
+# %%
+FILE_KEY_S3 = "preprocessed.parquet/data_clean_symb_1.parquet"
+reader.save_parquet(data=data_clean_symb_1, relative_path=FILE_KEY_S3)
+# %%
