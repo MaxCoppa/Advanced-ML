@@ -38,12 +38,12 @@ delta_t = time.time() - t0
 delta_t
 # %%
 data = pl.concat(data_partitions)
-data_clean_symb_1 = data.pipe(clean_na_values, threshold=0.05).pipe(
+data_clean_symb_1 = data.pipe(clean_na_values, threshold=0.01).pipe(
     select_symbol_id, id=1
 )
 
 data_clean_symb_1.head()
-# data_clean_symb_1.shape # (1487470, 79)
+data_clean_symb_1.shape  # (1524578, 69)
 # %%
 FILE_KEY_S3 = "preprocessed.parquet/data_clean_symb_1.parquet"
 reader.save_parquet(data=data_clean_symb_1, relative_path=FILE_KEY_S3)
