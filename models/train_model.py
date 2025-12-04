@@ -24,7 +24,7 @@ def train_model(
     r2_sup_train_list = []
     loss_list = []
 
-    for epoch in range(n_epochs):
+    for epoch in tqdm(range(n_epochs)):
         model.train()
         total_loss = 0.0
 
