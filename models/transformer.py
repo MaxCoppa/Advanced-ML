@@ -5,11 +5,8 @@ from torch.utils.data import Dataset, DataLoader
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import polars as pl 
 
-
-###########################################################
-# 1. Positional Encoding (identique)
-###########################################################
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, max_len=5000):
@@ -29,10 +26,6 @@ class PositionalEncoding(nn.Module):
         return x + self.pe[:, :x.size(1)]
 
 
-###########################################################
-# 2. Scaled Dot-Product Attention
-###########################################################
-
 def scaled_dot_product_attention(Q, K, V, mask=None):
     d_k = Q.size(-1)
     scores = Q @ K.transpose(-2, -1) / math.sqrt(d_k)
@@ -43,10 +36,6 @@ def scaled_dot_product_attention(Q, K, V, mask=None):
     attn = torch.softmax(scores, dim=-1)
     return attn @ V
 
-
-###########################################################
-# 3. Multi-Head Attention
-###########################################################
 
 class MultiHeadAttention(nn.Module):
     def __init__(self, d_model, num_heads):
@@ -83,10 +72,6 @@ class MultiHeadAttention(nn.Module):
         return self.W_o(attn)
 
 
-###########################################################
-# 4. Feed-Forward Network
-###########################################################
-
 class FeedForward(nn.Module):
     def __init__(self, d_model, d_ff=256):
         super().__init__()
@@ -97,10 +82,6 @@ class FeedForward(nn.Module):
     def forward(self, x):
         return self.linear2(self.relu(self.linear1(x)))
 
-
-###########################################################
-# 5. Encoder Layer
-###########################################################
 
 class EncoderLayer(nn.Module):
     def __init__(self, d_model, num_heads, d_ff=256):
@@ -121,10 +102,6 @@ class EncoderLayer(nn.Module):
 
         return x
 
-
-###########################################################
-# 6. Transformer Encoder for Time Series Forecasting
-###########################################################
 
 class TimeSeriesTransformer(nn.Module):
     def __init__(self, n_features, d_model=128, num_heads=4, num_layers=4, d_ff=256):
@@ -155,66 +132,67 @@ class TimeSeriesTransformer(nn.Module):
         return self.fc_out(last_token)
 
 
-###########################################################
-# 7. Dataset + DataLoader
-###########################################################
-
 class TimeSeriesDataset(Dataset):
-    def __init__(self, N=2000, seq_len=50, n_features=10):
-        self.seq_len = seq_len
-        self.n_features = n_features
+    def __init__(self, X, y, seq_len=50):
+        # --------------------------
+        # Convertir X vers numpy
+        # --------------------------
+        if isinstance(X, pl.DataFrame):
+            X = X.to_numpy()
+        elif isinstance(X, pl.Series):
+            X = X.to_numpy().reshape(-1, 1)
+        elif isinstance(X, pd.DataFrame) or isinstance(X, pd.Series):
+            X = X.to_numpy()
+            if X.ndim == 1:
+                X = X.reshape(-1, 1)
+        elif isinstance(X, torch.Tensor):
+            X = X.detach().cpu().numpy()
+        elif isinstance(X, np.ndarray):
+            pass
+        else:
+            raise TypeError(f"X type non supporté : {type(X)}")
 
-        # Dataset synthétique multivarié
-        self.x = torch.randn(N, seq_len, n_features)
-        y = torch.sin(self.x[:, :, 0]) + 0.5 * (self.x[:, :, 1] ** 2) + 0.1 * torch.randn(N, seq_len)
-        self.targets = y[:, -1].unsqueeze(1)  # t+1
+        # --------------------------
+        # Convertir y vers numpy
+        # --------------------------
+        if isinstance(y, pl.DataFrame):
+            y = y.select(y.columns[0]).to_numpy().reshape(-1)
+        elif isinstance(y, pl.Series):
+            y = y.to_numpy().reshape(-1)
+        elif isinstance(y, pd.Series) or isinstance(y, pd.DataFrame):
+            y = y.to_numpy().reshape(-1)
+        elif isinstance(y, torch.Tensor):
+            y = y.detach().cpu().numpy().reshape(-1)
+        elif isinstance(y, np.ndarray):
+            y = y.reshape(-1)
+        else:
+            raise TypeError(f"y type non supporté : {type(y)}")
+
+        # --------------------------
+        # Stocker et vérifier
+        # --------------------------
+        self.X = X.astype(float)
+        self.y = y.astype(float)
+        self.seq_len = seq_len
+
+        T = len(self.X)
+
+        if len(self.y) != T:
+            raise ValueError(f"X et y doivent avoir la même longueur : {T} vs {len(self.y)}")
+
+        self.n_samples = T - seq_len - 1
+        if self.n_samples <= 0:
+            raise ValueError("Pas assez de données pour ce seq_len.")
 
     def __len__(self):
-        return len(self.x)
+        return self.n_samples
 
     def __getitem__(self, idx):
-        return self.x[idx], self.targets[idx]
+        # ici self.X est toujours un np.ndarray → jamais un DF
+        x_window = self.X[idx : idx + self.seq_len]
+        y_target = self.y[idx + self.seq_len]
 
+        x_window = torch.tensor(x_window, dtype=torch.float32)
+        y_target = torch.tensor([y_target], dtype=torch.float32)
 
-train_dataset = TimeSeriesDataset()
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-
-
-###########################################################
-# 8. Training Loop
-###########################################################
-
-model = TimeSeriesTransformer(n_features=10)
-optimizer = optim.Adam(model.parameters(), lr=1e-3)
-criterion = nn.MSELoss()
-
-for epoch in range(10):
-    losses = []
-    for batch_x, batch_y in train_loader:
-        optimizer.zero_grad()
-        pred = model(batch_x)
-        loss = criterion(pred, batch_y)
-        loss.backward()
-        optimizer.step()
-        losses.append(loss.item())
-
-    print(f"Epoch {epoch+1} | Loss = {np.mean(losses):.5f}")
-
-
-###########################################################
-# 9. Test de prédiction
-###########################################################
-
-x_test, y_test = train_dataset[0]
-x_test = x_test.unsqueeze(0)
-
-y_hat = model(x_test).detach().item()
-print("\nVraie valeur :", y_test.item())
-print("Prediction   :", y_hat)
-
-plt.figure(figsize=(6,4))
-plt.title("Prédiction du modèle pour un échantillon")
-plt.plot([train_dataset.seq_len], [y_test.item()], "ro", label="vraie valeur")
-plt.plot([train_dataset.seq_len], [y_hat], "go", label="prédiction")
-plt.legend()
-plt.show()
+        return x_window, y_target
