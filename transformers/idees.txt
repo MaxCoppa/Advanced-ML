@@ -1,0 +1,4 @@
+- réduction dimension avant transformer :
+    - pca
+    - autoencoder 
+- rajouter valeur passées de y en feature
