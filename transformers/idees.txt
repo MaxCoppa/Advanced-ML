@@ -2,3 +2,8 @@
     - pca
     - autoencoder 
 - rajouter valeur passées de y en feature
+- si rien ne marche, essayer autres dataset, google trend
+- regarder papier : 
+- comparer notre modèle avec cisco hugging face
+- save les prédiction 
+- sauvegarder les train, s'inspirer de ça : https://github.com/MaxCoppa/Molecular-Graph-Captioning/blob/main/models/train_gcn.py
