@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-# Assurez-vous que la classe MLP est définie ci-dessus
 
 class MLP(nn.Module):
     def __init__(self, in_dim: int, hidden: list[int], out_dim: int, 
@@ -30,8 +29,6 @@ class MLP(nn.Module):
     def forward(self, x):
         return self.net(x)
 
-# --- Classes Encoder, Decoder, TaskHead restent identiques et flexibles ---
-# Elles doivent accepter les paramètres de régularisation et d'activation
 
 class Encoder(nn.Module):
     def __init__(self, n_feat: int, hidden: list[int], n_latent: int,
@@ -55,7 +52,6 @@ class TaskHead(nn.Module):
     def forward(self, z): return self.net(z)
 
 
-# --- CLASSE AUTOENCODER MISE À JOUR ---
 
 class AutoEncoder(nn.Module):
     def __init__(
@@ -66,9 +62,8 @@ class AutoEncoder(nn.Module):
         decoder_hidden: list[int],
         head_hidden: list[int],
         
-        # --- PARAMÈTRES SPÉCIFIQUES À CHAQUE MODULE ---
         
-        # Activations (peut être une classe unique, ou un dictionnaire/tuple de 3 classes)
+        # Activations
         activations = (nn.ReLU, nn.ReLU, nn.ReLU), # (Encoder, Decoder, Head)
         
         # Dropouts
