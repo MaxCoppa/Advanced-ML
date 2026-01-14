@@ -1,6 +1,4 @@
 # Advanced-ML
-This repo is a project for stock prediction using Auto - Encoders and Transformers model. 
+This repo is a project for prediction of financial time series using state of the art deep learning methods. 
 
 This is conducted by Antoine Gilson, Marama Simoneau and Maxime Coppa as part of Advanced ML course.
-
-https://huggingface.co/cisco-ai/cisco-time-series-model-1.0-preview
