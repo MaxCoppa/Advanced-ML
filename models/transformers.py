@@ -128,7 +128,7 @@ class TimeSeriesTransformer(nn.Module):
 
         x = self.norm(x)
 
-        last_token = x[:, -1, :]  # prédiction t+1
+        last_token = x[:, -1, :]  
 
         return self.fc_out(last_token)
 

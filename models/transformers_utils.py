@@ -149,20 +149,18 @@ def train_model(
             f"Epoch {epoch+1:03d} | "
             f"R² Train: {r2_train:.4f} | "
             f"R² Val: {r2_val:.4f}"
-        )
-
-        if plot:
-            plt.clf()
-            plt.plot(r2_train_hist, label="Train R²", color='blue')
-            plt.plot(r2_val_hist, label="Val R²", color='orange')
-            plt.xlabel("Epochs")
-            plt.ylabel("R² Score")
-            plt.title("Model Performance during Training")
-            plt.legend()
-            plt.grid(True)
-            plt.pause(0.01)
+        )            
 
     if plot:
+        plt.clf()
+        plt.plot(r2_train_hist, label="Train R²", color='blue')
+        plt.plot(r2_val_hist, label="Val R²", color='orange')
+        plt.xlabel("Epochs")
+        plt.ylabel("R² Score")
+        plt.title("Model Performance during Training")
+        plt.legend()
+        plt.grid(True)
+        plt.pause(0.01)
         plt.ioff() 
         plt.show()
 
