@@ -150,10 +150,11 @@ This produces the processed files used by all experiments.
 All experiments are executed from notebooks. Depending on which architecture you want to run :
 
 - Autoencoders:  
-  `autoencoders/`
+  `autoencoders/0_baseline_ae.ipynb`
 
 - Transformers:  
-  `transformers/`
+  `transformers/0_baseline_tf.ipynb`
+  `transformers/1_latent_features_tf.ipynb`
 
 - LightGBM baseline:  
   `LGBM/comparison.ipynb`
