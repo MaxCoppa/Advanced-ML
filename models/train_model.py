@@ -14,6 +14,7 @@ def train_model(
     optimizer,
     device="cpu",
     n_epochs=60,
+    title=None
 ):
     model = model.to(device)
     criterion = criterion.to(device)
@@ -24,7 +25,7 @@ def train_model(
     r2_sup_train_list = []
     loss_list = []
 
-    for epoch in range(n_epochs):
+    for epoch in tqdm(range(n_epochs)):
         model.train()
         total_loss = 0.0
 
@@ -98,12 +99,12 @@ def train_model(
         )
 
     # Plot
-    plot_r2(r2_rec_train_list, r2_rec_val_list, r2_sup_train_list, r2_sup_val_list)
+    plot_r2(r2_rec_train_list, r2_rec_val_list, r2_sup_train_list, r2_sup_val_list, title)
 
-    return True
+    return r2_rec_train_list, r2_rec_val_list, r2_sup_train_list, r2_sup_val_list
 
 
-def plot_r2(r2_rec_train, r2_rec_val, r2_sup_train, r2_sup_val):
+def plot_r2(r2_rec_train, r2_rec_val, r2_sup_train, r2_sup_val, title=None):
     fig, axes = plt.subplots(2, 1, figsize=(11, 8), sharex=True)
 
     epochs = range(1, len(r2_rec_train) + 1)
@@ -122,7 +123,10 @@ def plot_r2(r2_rec_train, r2_rec_val, r2_sup_train, r2_sup_val):
     ax.set_ylim(ymin, ymax)
 
     ax.set_ylabel("R² (reconstruction)")
-    ax.set_title("Reconstruction R²")
+    if title is not None:
+        ax.set_title(title + " : " + "Reconstruction R²")
+    else:
+        ax.set_title("Reconstruction R²")
     ax.grid(True, alpha=0.3)
     ax.legend()
 
@@ -137,7 +141,10 @@ def plot_r2(r2_rec_train, r2_rec_val, r2_sup_train, r2_sup_val):
 
     ax.set_xlabel("Epoch")
     ax.set_ylabel("R² (supervision)")
-    ax.set_title("Supervision R²")
+    if title is not None:
+        ax.set_title(title + " : " + "Supervision R²")
+    else:
+        ax.set_title("Supervision R²")
     ax.grid(True, alpha=0.3)
     ax.legend()
 
