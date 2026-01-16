@@ -12,7 +12,7 @@ The project is conducted by **Antoine Gilson**, **Marama Simoneau**, and **Maxim
 
 Financial time series prediction remains a challenging task due to the noisy, non-stationary, and weakly structured nature of market data. While recent advances in deep learning—particularly **Autoencoders** and **Transformer-based architectures**—have shown promise in sequence modeling, their actual contribution to predictive performance in financial settings remains debated.
 
-In this work, we conduct a systematic empirical study using the **Jane Street Market Prediction** dataset. We investigate whether modern deep learning architectures provide tangible benefits over strong classical baselines, and whether representation learning improves downstream performance or primarily affects optimization dynamics.
+In this work, we conduct a systematic empirical study using the **Jane Street Market Prediction** dataset (https://www.kaggle.com/competitions/jane-street-real-time-market-data-forecasting). We investigate whether modern deep learning architectures provide tangible benefits over strong classical baselines, and whether representation learning through autoencoders improves downstream performance or primarily affects optimization dynamics.
 
 ---
 
@@ -27,7 +27,7 @@ We train supervised autoencoders that jointly optimize:
 
 The goal is to learn compact latent representations that retain predictive information while reducing input dimensionality.
 
-### 2. LightGBM with Latent Features
+### 2. LightGBM using Latent Features
 We evaluate whether latent representations learned by supervised autoencoders improve the performance of a strong non-neural baseline:
 - **LightGBM**
 - Comparison between raw features and autoencoder-derived features
