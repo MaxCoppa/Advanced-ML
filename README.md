@@ -56,7 +56,7 @@ These results align with recent literature questioning the necessity of increasi
 
 ## Repository structure
 
-.
+```
 ├── README.md
 ├── requirements.txt
 │
@@ -88,7 +88,7 @@ These results align with recent literature questioning the necessity of increasi
 │
 ├── LGBM/
 │   └── comparison.ipynb
-
+```
 ## How the repository was created
 
 The repository is structured around three layers:
