@@ -16,7 +16,7 @@ In this work, we conduct a systematic empirical study using the **Jane Street Ma
 
 ---
 
-## Experimental Directions
+## Our contribution
 
 We explore three complementary modeling approaches:
 
